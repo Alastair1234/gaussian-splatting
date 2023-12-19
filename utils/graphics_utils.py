@@ -62,10 +62,10 @@ def getProjectionMatrix(znear, zfar, fovX, fovY):
     ty = -(top + bottom) / (top - bottom)
     tz = -(zfar + znear) / (zfar - znear)
     P = torch.tensor([
-        [2 / (right - left), 0, 0, tx],
-        [0, 2 / (top - bottom), 0, ty],
-        [0, 0, -2 / (zfar - znear), tz],
-        [0, 0, 0, 1]
+        [2 / (right - left), 0, 0, 0],
+        [0, 2 / (top - bottom), 0, 0],
+        [0, 0, -2 / (zfar - znear), 0],
+        [tx, ty, tz, 1]
     ], dtype=torch.float32)
     return P
 
