@@ -49,25 +49,24 @@ def getWorld2View2(R, t, translate=np.array([.0, .0, .0]), scale=1.0):
     return np.float32(Rt)
 
 def getProjectionMatrix(znear, zfar, fovX, fovY):
+    # Calculate the extents of the view based on the field of view and near plane
     tanHalfFovY = math.tan((fovY / 2))
     tanHalfFovX = math.tan((fovX / 2))
-
     top = tanHalfFovY * znear
     bottom = -top
     right = tanHalfFovX * znear
     left = -right
 
-    P = torch.zeros(4, 4)
-
-    z_sign = 1.0
-
-    P[0, 0] = 2.0 * znear / (right - left)
-    P[1, 1] = 2.0 * znear / (top - bottom)
-    P[0, 2] = (right + left) / (right - left)
-    P[1, 2] = (top + bottom) / (top - bottom)
-    P[3, 2] = z_sign
-    P[2, 2] = z_sign * zfar / (zfar - znear)
-    P[2, 3] = -(zfar * znear) / (zfar - znear)
+    # Create an orthographic projection matrix
+    tx = -(right + left) / (right - left)
+    ty = -(top + bottom) / (top - bottom)
+    tz = -(zfar + znear) / (zfar - znear)
+    P = torch.tensor([
+        [2 / (right - left), 0, 0, tx],
+        [0, 2 / (top - bottom), 0, ty],
+        [0, 0, -2 / (zfar - znear), tz],
+        [0, 0, 0, 1]
+    ], dtype=torch.float32)
     return P
 
 def fov2focal(fov, pixels):
